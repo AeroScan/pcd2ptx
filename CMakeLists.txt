@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 set(CMAKE_INSTALL_PREFIX /usr/bin)
 
@@ -11,8 +11,14 @@ include_directories(include)
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-add_executable (pcd2ptx pcd2ptx.cpp)
+file(GLOB HDRS ${CMAKE_CURRENT_SOURCE_DIR}/include/*)
+
+add_library(pcd2ptx pcd2ptx.cpp ${HDRS})
+target_include_directories(pcd2ptx PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries (pcd2ptx ${PCL_LIBRARIES})
-install(TARGETS pcd2ptx
-    DESTINATION ${CMAKE_INSTALL_PREFIX}
-    )
+
+
+add_executable(ConversionTest tests/conversion_test.cpp)
+target_link_libraries(ConversionTest pcd2ptx)
+
+add_test(NAME Conversion_Test COMMAND ConversionTest)
