@@ -2,8 +2,9 @@
 #include <fstream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcd2ptx.hpp>
 
-void writePTXHeader(std::ofstream &file, const int width, const int height)
+void Pcd2PtxConverter::writePTXHeader(std::ofstream &file, const int width, const int height)
 {
     file << width << std::endl
          << height << std::endl;
@@ -19,7 +20,7 @@ void writePTXHeader(std::ofstream &file, const int width, const int height)
     file << 0.f << " " << 0.f << " " << 0.f << " " << 1.f << std::endl;
 }
 
-void writePTXFileXYZ(const std::string &filename, const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+void Pcd2PtxConverter::writePTXFileXYZ(const std::string &filename, const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
     std::ofstream file(filename.c_str());
 
@@ -33,7 +34,7 @@ void writePTXFileXYZ(const std::string &filename, const pcl::PointCloud<pcl::Poi
     file.close();
 }
 
-void writePTXFileXYZRGB(const std::string &filename, const pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud)
+void Pcd2PtxConverter::writePTXFileXYZRGB(const std::string &filename, const pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud)
 {
     std::ofstream file(filename.c_str());
 
@@ -51,14 +52,24 @@ void writePTXFileXYZRGB(const std::string &filename, const pcl::PointCloud<pcl::
     file.close();
 }
 
-int main()
+bool Pcd2PtxConverter::execute()
 {
     // Load the point cloud data
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::io::loadPCDFile("pc.pcd", *cloud);
+    pcl::io::loadPCDFile(inputFile, *cloud);
 
     // Save to PTX format
-    writePTXFileXYZRGB("pc.ptx", cloud);
+    writePTXFileXYZRGB(outputFile, cloud);
 
-    return 0;
+    return true;
+}
+
+void Pcd2PtxConverter::setInputFile(std::string file)
+{
+    inputFile = file;
+}
+
+void Pcd2PtxConverter::setOutputFile(std::string file)
+{
+    outputFile = file;
 }
